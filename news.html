@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ozod Trader Pro - News Signal System</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #090d16 0%, #111c33 50%, #070a12 100%);
+            color: #f8fafc;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+            background: rgba(26, 38, 59, 0.45);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 30px 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        h2, h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #38bdf8;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        label {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-left: 4px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 14px;
+            margin: 6px 0 12px 0;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        input:focus, select:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2), inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        button, .tg-btn {
+            background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            width: 100%;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s;
+        }
+
+        button:active, .tg-btn:active {
+            transform: scale(0.96);
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3), inset 0 1px 2px rgba(0,0,0,0.4);
+        }
+
+        .secondary-btn {
+            background: rgba(51, 65, 85, 0.6);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .danger-btn {
+            background: linear-gradient(180deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        .success-btn {
+            background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
+        }
+
+        .warning-btn {
+            background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+        }
+
+        .hidden { display: none !important; }
+
+        .card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 18px;
+            border-radius: 16px;
+            margin: 15px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .signal-box {
+            background: rgba(15, 23, 42, 0.7);
+            border-left: 4px solid #22c55e;
+            padding: 15px;
+            margin-top: 12px;
+            border-radius: 10px;
+        }
+
+        .locked-box {
+            background: rgba(15, 23, 42, 0.85);
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            margin-top: 12px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .admin-badge {
+            background: #ef4444;
+            color: white;
+            padding: 3px 8px;
+            font-size: 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .user-row {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .switch-auth {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .switch-auth span {
+            color: #38bdf8;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* TELEGRAM STYLE CHAT STYLES */
+        .tg-chat-box {
+            background: rgba(13, 17, 23, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 10px;
+        }
+
+        .tg-message {
+            background: rgba(30, 41, 59, 0.85);
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            max-width: 85%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .tg-message.mine {
+            background: rgba(2, 132, 199, 0.35);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            margin-left: auto;
+        }
+
+        .tg-msg-author {
+            font-size: 11px;
+            font-weight: bold;
+            color: #38bdf8;
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        .tg-msg-text {
+            font-size: 13px;
+            color: #f8fafc;
+            word-break: break-word;
+            line-height: 1.35;
+        }
+
+        .tg-msg-time {
+            font-size: 9px;
+            color: #94a3b8;
+            float: right;
+            margin-top: 4px;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    <!-- AUTH SECTION -->
+    <div id="auth-section">
+        <h2 id="auth-title">Ozod Trader - Kirish</h2>
+        
+        <label>Login (Ism):</label>
+        <input type="text" id="auth-login" placeholder="Loginingizni kiriting">
+        
+        <label>Parol:</label>
+        <input type="password" id="auth-pass" placeholder="Parolni kiriting">
+        
+        <button id="auth-btn" onclick="handleAuth()">Tizimga Kirish 🚀</button>
+        
+        <div class="switch-auth">
+            <span id="switch-text" onclick="toggleAuthMode()">Akkauntingiz yo'qmi? Ro'yxatdan o'tish</span>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="dashboard-section" class="hidden">
+        <!-- TOP BAR: User, Role & Logout -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: rgba(15,23,42,0.5); padding: 10px 14px; border-radius: 14px;">
+            <div>
+                <span id="user-title" style="font-size: 15px; font-weight: bold; color: #f8fafc;">Foydalanuvchi</span>
+                <div style="margin-top: 2px;" id="role-badge"></div>
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+                <button id="nav-balance-btn" onclick="toggleBalanceCard()" class="warning-btn" style="width: auto; padding: 6px 10px; font-size: 12px; margin: 0;">💰 Balans</button>
+                <button onclick="logout()" class="secondary-btn" style="width: auto; padding: 6px 10px; font-size: 12px; margin: 0;">Chiqish 🚪</button>
+            </div>
+        </div>
+
+        <!-- PREMIUM STATUS -->
+        <div id="premium-status-banner" style="text-align: center; margin-bottom: 12px; font-size: 13px; font-weight: bold;"></div>
+
+        <!-- BALANCE / STARS (Tugma bosilgandagina ochiladi) -->
+        <div id="user-balance-card" class="card hidden" style="padding: 14px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(251, 191, 36, 0.4);">
+            <div>
+                <p style="font-size: 12px; color: #94a3b8;">Sizning balansingiz:</p>
+                <p style="font-size: 18px; font-weight: bold; color: #fbbf24;" id="user-stars-display">⭐ 0 Stars</p>
+            </div>
+            <button onclick="togglePurchaseModal()" class="success-btn" style="width: auto; padding: 8px 14px; font-size: 13px; margin: 0;">💎 Premium olish</button>
+        </div>
+
+        <!-- PURCHASE MODAL -->
+        <div id="purchase-modal" class="card hidden" style="border: 1px solid rgba(56, 189, 248, 0.4);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="margin: 0; font-size: 15px; color: #38bdf8;">💎 Token evaziga Premium olish</h3>
+                <span style="cursor: pointer; color: #94a3b8; font-size: 18px;" onclick="togglePurchaseModal()">✕</span>
+            </div>
+            
+            <div style="margin-bottom: 10px; background: rgba(15,23,42,0.5); padding: 10px; border-radius: 10px;">
+                <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 4px;">• <b>1 Kunlik Premium:</b> 1000 Stars</p>
+                <button onclick="buySubscription(1, 1000)" class="warning-btn" style="padding: 8px; font-size: 12px; margin-top: 4px;">1 Kunlik sotib olish</button>
+            </div>
+
+            <div style="background: rgba(15,23,42,0.5); padding: 10px; border-radius: 10px; margin-bottom: 10px;">
+                <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 4px;">• <b>30 Kunlik Premium:</b> 3000 Stars</p>
+                <button onclick="buySubscription(30, 3000)" class="success-btn" style="padding: 8px; font-size: 12px; margin-top: 4px;">30 Kunlik sotib olish</button>
+            </div>
+
+            <a href="https://t.me/L7X7D" target="_blank" rel="noopener noreferrer" class="tg-btn" style="margin-top: 5px; font-size: 13px; padding: 10px;">Star sotib olish (Adminga yozish) ✈</a>
+        </div>
+
+        <!-- NEWS SIGNAL SECTION (Toggleable) -->
+        <div class="card">
+            <div onclick="toggleNewsDropdown()" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                <h3 style="text-align: left; font-size: 15px; margin: 0; color: #38bdf8;">📢 News Signal</h3>
+                <span id="news-arrow-icon" style="font-size: 14px; color: #94a3b8; transition: transform 0.3s;">▼</span>
+            </div>
+            <div id="news-container" class="hidden" style="margin-top: 10px;"></div>
+        </div>
+
+        <!-- NEWS TELEGRAM STYLE CHAT SECTION -->
+        <div class="card">
+            <div onclick="toggleChatDropdown()" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                <h3 style="text-align: left; font-size: 15px; margin: 0; color: #38bdf8;">💬 News Signal Chati</h3>
+                <span id="chat-arrow-icon" style="font-size: 14px; color: #94a3b8; transition: transform 0.3s;">▼</span>
+            </div>
+            <div id="chat-container" class="hidden" style="margin-top: 12px;">
+                <div class="tg-chat-box">
+                    <div id="chat-messages-list" style="height: 220px; overflow-y: auto; margin-bottom: 10px; padding-right: 4px;">
+                        <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 20px;">Xabarlar yuklanmoqda...</p>
+                    </div>
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <input type="text" id="chat-input" placeholder="Xabar yozing..." style="margin: 0; font-size: 13px; padding: 10px;" onkeydown="handleChatKeyDown(event)">
+                        <button onclick="sendChatMessage()" class="success-btn" style="width: auto; margin: 0; padding: 10px 14px; font-size: 13px;">➤</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEWS TRADING GUIDE & RISK MANAGEMENT -->
+        <div class="card" style="border: 1px solid rgba(56, 189, 248, 0.3);">
+            <h3 style="text-align: left; font-size: 14px; color: #38bdf8; margin-bottom: 6px;">⚠ News Savdo Qoidalari & Risk</h3>
+            <p style="font-size: 12px; color: #cbd5e1; line-height: 1.4; margin-bottom: 4px;">• <b>Risk:</b> Yangilik vaqtida spred kengayishi mumkin, depozitning 1-2% dan ko'p qismini qo'ymang.</p>
+            <p style="font-size: 12px; color: #cbd5e1; line-height: 1.4;">• <b>Yechish:</b> Impuls (spike) berishi bilan daromadni darhol qo'lda (manual) yechib oling!</p>
+        </div>
+
+        <!-- ADMIN PANEL -->
+        <div id="admin-panel" class="card hidden" style="border: 1px solid rgba(239, 68, 68, 0.4);">
+            <h3 style="text-align: left; font-size: 15px; color: #f87171; margin-bottom: 10px;">🛠 Admin Panel</h3>
+            
+            <button onclick="clearAllChatMessages()" class="danger-btn" style="margin-bottom: 15px; padding: 10px; font-size: 13px;">🗑 Chatni To'liq Tozalash</button>
+
+            <label style="color: #f87171; font-weight: bold;">👥 Foydalanuvchilarni boshqarish:</label>
+            <div id="admin-users-list" style="margin: 8px 0 12px 0; max-height: 220px; overflow-y: auto;">
+                <p style="font-size: 12px; color: #94a3b8;">Foydalanuvchilar yuklanmoqda...</p>
+            </div>
+
+            <hr style="margin: 12px 0; border-color: rgba(255,255,255,0.1);">
+
+            <label>News Nomi (Masalan: NFP, CPI, FOMC):</label>
+            <input type="text" id="news-name" placeholder="Yangilik nomini kiriting">
+
+            <label>News Vaqtini Tanlash:</label>
+            <input type="datetime-local" id="news-datetime-picker">
+
+            <label>Yo'nalish (Direction):</label>
+            <select id="news-direction">
+                <option value="BUY 🟢">BUY (Sotib olish)</option>
+                <option value="SELL 🔴">SELL (Sotish)</option>
+            </select>
+
+            <label>Izoh (Ixtiyoriy):</label>
+            <input type="text" id="news-desc" placeholder="Izoh yozing (bo'sh qoldirish mumkin)">
+            <button onclick="sendNewsSignal()" class="danger-btn">Hammaga Signal Yuborish</button>
+            <button onclick="deleteNewsSignal()" class="secondary-btn" style="background: #475569; margin-top: 8px;">❌ News Signalni O'chirish</button>
+        </div>
+    </div>
+</div>
+
+<!-- FIREBASE SCRIPTS -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+    import { getDatabase, ref, set, get, child, onValue, push, remove } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB9O4zJL-lyERRwXeHyYAKqkCatldnSDWU",
+        authDomain: "news-c667b.firebaseapp.com",
+        databaseURL: "https://news-c667b-default-rtdb.firebaseio.com",
+        projectId: "news-c667b",
+        storageBucket: "news-c667b.firebasestorage.app",
+        messagingSenderId: "816233150852",
+        appId: "1:816233150852:web:bedeea5e27f296f21845d1",
+        measurementId: "G-VCCH26WWCJ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let isRegisterMode = false;
+    let currentUserData = { username: "", role: "", premium: false, stars: 0 };
+    let timerInterval = null;
+    let isNewsOpen = false;
+    let isChatOpen = false;
+    let isBalanceOpen = false;
+
+    window.toggleAuthMode = function() {
+        isRegisterMode = !isRegisterMode;
+        if (isRegisterMode) {
+            document.getElementById('auth-title').innerText = "Ozod Trader - Ro'yxatdan o'tish";
+            document.getElementById('auth-btn').innerText = "Ro'yxatdan o'tish 🚀";
+            document.getElementById('switch-text').innerText = "Akkauntingiz bormi? Tizimga kirish";
+        } else {
+            document.getElementById('auth-title').innerText = "Ozod Trader - Kirish";
+            document.getElementById('auth-btn').innerText = "Tizimga Kirish 🚀";
+            document.getElementById('switch-text').innerText = "Akkauntingiz yo'qmi? Ro'yxatdan o'tish";
+        }
+    }
+
+    window.toggleBalanceCard = function() {
+        const balanceCard = document.getElementById('user-balance-card');
+        isBalanceOpen = !isBalanceOpen;
+        if (isBalanceOpen) {
+            balanceCard.classList.remove('hidden');
+        } else {
+            balanceCard.classList.add('hidden');
+        }
+    }
+
+    window.togglePurchaseModal = function() {
+        const modal = document.getElementById('purchase-modal');
+        modal.classList.toggle('hidden');
+    }
+
+    window.toggleNewsDropdown = function() {
+        const container = document.getElementById('news-container');
+        const arrow = document.getElementById('news-arrow-icon');
+        isNewsOpen = !isNewsOpen;
+        if (isNewsOpen) {
+            container.classList.remove('hidden');
+            arrow.style.transform = "rotate(180deg)";
+        } else {
+            container.classList.add('hidden');
+            arrow.style.transform = "rotate(0deg)";
+        }
+    }
+
+    window.toggleChatDropdown = function() {
+        const container = document.getElementById('chat-container');
+        const arrow = document.getElementById('chat-arrow-icon');
+        isChatOpen = !isChatOpen;
+        if (isChatOpen) {
+            container.classList.remove('hidden');
+            arrow.style.transform = "rotate(180deg)";
+            loadChatMessages();
+        } else {
+            container.classList.add('hidden');
+            arrow.style.transform = "rotate(0deg)";
+        }
+    }
+
+    window.handleAuth = async function() {
+        const loginVal = document.getElementById('auth-login').value.trim();
+        const passVal = document.getElementById('auth-pass').value.trim();
+
+        if(!loginVal || !passVal) {
+            alert("Iltimos, login va parolni kiriting!");
+            return;
+        }
+
+        if (loginVal === "admin" && passVal === "88 888 83 43") {
+            currentUserData = { username: "Admin", role: "admin", premium: true, stars: 0 };
+            localStorage.setItem("ozod_user", JSON.stringify(currentUserData));
+            loadDashboard();
+            return;
+        }
+
+        try {
+            const dbRef = ref(db);
+            const snapshot = await get(child(dbRef, `users/${loginVal}`));
+
+            if (isRegisterMode) {
+                if (snapshot.exists()) {
+                    alert("Bu login band! Boshqa login tanlang.");
+                    return;
+                }
+                const newUser = { password: passVal, role: "user", premium: false, stars: 0 };
+                await set(ref(db, 'users/' + loginVal), newUser);
+                alert("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
+                currentUserData = { username: loginVal, role: "user", premium: false, stars: 0 };
+                localStorage.setItem("ozod_user", JSON.stringify(currentUserData));
+                loadDashboard();
+            } else {
+                if (!snapshot.exists()) {
+                    alert("Bunday foydalanuvchi topilmadi! Oldin ro'yxatdan o'ting.");
+                    return;
+                }
+                const userData = snapshot.val();
+                if (userData.password !== passVal) {
+                    alert("Parol noto'g'ri!");
+                    return;
+                }
+                currentUserData = { username: loginVal, role: "user", premium: userData.premium || false, stars: userData.stars || 0 };
+                localStorage.setItem("ozod_user", JSON.stringify(currentUserData));
+                loadDashboard();
+            }
+        } catch (error) {
+            alert("Xatolik: " + error.message);
+        }
+    }
+
+    async function syncUserData() {
+        if (currentUserData.role === 'admin') return;
+        try {
+            const snap = await get(child(ref(db), `users/${currentUserData.username}`));
+            if (snap.exists()) {
+                const data = snap.val();
+                currentUserData.premium = data.premium || false;
+                currentUserData.stars = data.stars || 0;
+            } else {
+                alert("Sizning akkauntingiz admin tomonidan o'chirib yuborilgan!");
+                logout();
+            }
+        } catch(e) {}
+    }
+
+    window.buySubscription = async function(days, cost) {
+        if (currentUserData.stars < cost) {
+            alert("Balansingizda yetarli Star (token) mavjud emas!");
+            return;
+        }
+
+        try {
+            const newStars = currentUserData.stars - cost;
+            await set(ref(db, `users/${currentUserData.username}/stars`), newStars);
+            await set(ref(db, `users/${currentUserData.username}/premium`), true);
+            
+            currentUserData.stars = newStars;
+            currentUserData.premium = true;
+
+            alert("Tabriklaymiz! Premium muvaffaqiyatli faollashtirildi 🎉");
+            togglePurchaseModal();
+            loadDashboard();
+        } catch (e) {
+            alert("Xatolik: " + e.message);
+        }
+    }
+
+    async function loadDashboard() {
+        await syncUserData();
+        if (!currentUserData.username) return;
+
+        document.getElementById('auth-section').classList.add('hidden');
+        document.getElementById('dashboard-section').classList.remove('hidden');
+        document.getElementById('user-title').innerText = currentUserData.username;
+        document.getElementById('user-stars-display').innerText = `⭐ ${currentUserData.stars} Stars`;
+
+        const banner = document.getElementById('premium-status-banner');
+        if (currentUserData.premium || currentUserData.role === 'admin') {
+            banner.innerHTML = '<span style="color: #22c55e;">✅ Premium faol (Barcha signallar ochiq)</span>';
+        } else {
+            banner.innerHTML = '<span style="color: #ef4444;">❌ Premium yo\'q</span>';
+        }
+
+        const balanceBtn = document.getElementById('nav-balance-btn');
+        const adminPanel = document.getElementById('admin-panel');
+
+        if (currentUserData.role === 'admin') {
+            document.getElementById('role-badge').innerHTML = '<span class="admin-badge">ADMIN</span>';
+            adminPanel.classList.remove('hidden');
+            balanceBtn.classList.add('hidden'); // Adminga balans tugmasi kerak emas
+            loadAdminUsersList();
+        } else {
+            document.getElementById('role-badge').innerHTML = '<span style="color:#38bdf8; font-weight: 500; font-size: 11px;">USER</span>';
+            adminPanel.classList.add('hidden');
+            balanceBtn.classList.remove('hidden');
+        }
+
+        updateNewsDisplay();
+    }
+
+    window.logout = function() {
+        localStorage.removeItem("ozod_user");
+        if (timerInterval) clearInterval(timerInterval);
+        currentUserData = { username: "", role: "", premium: false, stars: 0 };
+        isBalanceOpen = false;
+        document.getElementById('user-balance-card').classList.add('hidden');
+        document.getElementById('auth-section').classList.remove('hidden');
+        document.getElementById('dashboard-section').classList.add('hidden');
+        document.getElementById('admin-panel').classList.add('hidden');
+        document.getElementById('auth-login').value = "";
+        document.getElementById('auth-pass').value = "";
+    }
+
+    function loadAdminUsersList() {
+        const usersListContainer = document.getElementById('admin-users-list');
+        onValue(ref(db, 'users'), (snapshot) => {
+            if (!snapshot.exists()) {
+                usersListContainer.innerHTML = '<p style="font-size: 12px; color: #94a3b8;">Foydalanuvchilar yo\'q.</p>';
+                return;
+            }
+            let html = '';
+            snapshot.forEach((childSnapshot) => {
+                const username = childSnapshot.key;
+                const userData = childSnapshot.val();
+                const isPrem = userData.premium ? true : false;
+                const starsCount = userData.stars || 0;
+                
+                html += `
+                    <div class="user-row">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 13px; font-weight: bold; color: #fff;">👤 ${username}</span>
+                            <span style="font-size: 12px; color: #fbbf24;">⭐ ${starsCount} Stars</span>
+                        </div>
+                        <div style="display: flex; gap: 6px; margin-bottom: 6px;">
+                            <input type="number" id="star-input-${username}" placeholder="Star miqdori" style="margin:0; padding:6px 8px; font-size: 12px;">
+                            <button onclick="sendUserStars('${username}')" class="secondary-btn" style="width: auto; padding: 6px 10px; font-size: 12px; margin: 0; background: #d97706;">🪙 Star yuborish</button>
+                        </div>
+                        <div style="display: flex; gap: 6px; margin-bottom: 6px;">
+                            ${isPrem ? 
+                                `<button onclick="toggleUserPremium('${username}', false)" class="danger-btn" style="width: 100%; padding: 6px; font-size: 11px; margin: 0; background: #b91c1c;">❌ Premiumni olish</button>` :
+                                `<button onclick="toggleUserPremium('${username}', true)" class="success-btn" style="width: 100%; padding: 6px; font-size: 11px; margin: 0;">💎 Premium berish</button>`
+                            }
+                        </div>
+                        <div>
+                            <button onclick="deleteUser('${username}')" class="danger-btn" style="width: 100%; padding: 6px; font-size: 11px; margin: 0;">🗑 Foydalanuvchini o'chirish</button>
+                        </div>
+                    </div>
+                `;
+            });
+            usersListContainer.innerHTML = html;
+        });
+    }
+
+    window.toggleUserPremium = async function(username, status) {
+        try {
+            await set(ref(db, `users/${username}/premium`), status);
+            alert(username + (status ? " ga premium berildi!" : " dan premium olib tashlandi!"));
+        } catch (e) {
+            alert("Xatolik: " + e.message);
+        }
+    }
+
+    window.sendUserStars = async function(username) {
+        const val = parseInt(document.getElementById(`star-input-${username}`).value);
+        if (isNaN(val) || val <= 0) {
+            alert("Iltimos, To'g'ri star miqdorini kiriting!");
+            return;
+        }
+        try {
+            const snap = await get(child(ref(db), `users/${username}/stars`));
+            const currentStars = snap.exists() ? snap.val() : 0;
+            const newTotal = currentStars + val;
+            await set(ref(db, `users/${username}/stars`), newTotal);
+            alert(`${username} ga ${val} ta Star qo'shildi! Jami: ${newTotal}`);
+            document.getElementById(`star-input-${username}`).value = "";
+        } catch(e) {
+            alert("Xatolik: " + e.message);
+        }
+    }
+
+    window.deleteUser = async function(username) {
+        if (!confirm(`Haqiqatan ham "${username}" foydalanuvchisini bazadan butunlay o'chirib tashlamoqchimisiz?`)) return;
+        try {
+            await remove(ref(db, `users/${username}`));
+            alert(`"${username}" bazadan o'chirildi!`);
+        } catch (e) {
+            alert("Xatolik: " + e.message);
+        }
+    }
+
+    window.sendNewsSignal = async function() {
+        const newsNameVal = document.getElementById('news-name').value.trim();
+        const datetimeVal = document.getElementById('news-datetime-picker').value;
+        const dir = document.getElementById('news-direction').value;
+        const desc = document.getElementById('news-desc').value;
+
+        if(!newsNameVal || !datetimeVal) {
+            alert("Iltimos, news nomi va vaqtini to'liq kiriting!");
+            return;
+        }
+
+        try {
+            await set(ref(db, 'signals/latest'), {
+                newsName: newsNameVal,
+                targetTime: datetimeVal,
+                direction: dir,
+                description: desc || "Izoh kiritilmagan",
+                timestamp: Date.now()
+            });
+            alert("Signal barcha foydalanuvchilarga yuborildi!");
+        } catch (e) {
+            alert("Xatolik yuz berdi: " + e.message);
+        }
+    }
+
+    window.deleteNewsSignal = async function() {
+        if (!confirm("Haqiqatan ham news signalni o'chirib tashlamoqchimisiz?")) return;
+        try {
+            await remove(ref(db, 'signals/latest'));
+            alert("News signal muvaffaqiyatli o'chirildi!");
+        } catch (e) {
+            alert("Xatolik: " + e.message);
+        }
+    }
+
+    window.clearAllChatMessages = async function() {
+        if (!confirm("Haqiqatan ham chatdagi barcha xabarlarni tozalab tashlamoqchimisiz?")) return;
+        try {
+            await set(ref(db, 'chat_messages'), null);
+            alert("Chat muvaffaqiyatli tozalandi!");
+        } catch (e) {
+            alert("Xatolik: " + e.message);
+        }
+    }
+
+    let latestSignalData = null;
+
+    function updateNewsDisplay() {
+        const container = document.getElementById('news-container');
+        if (!latestSignalData) {
+            container.innerHTML = `<p style="color: #94a3b8; font-size: 13px;">Hozircha yangi signal mavjud emas.</p>`;
+            if (timerInterval) clearInterval(timerInterval);
+            return;
+        }
+
+        if (currentUserData.premium || currentUserData.role === 'admin') {
+            container.innerHTML = `
+                <div class="signal-box" style="margin-top: 0;">
+                    <p style="font-size: 14px; font-weight: bold; color: #f8fafc; margin-bottom: 6px;">📰 Yangilik: <span style="color: #38bdf8;">${latestSignalData.newsName || 'News'}</span></p>
+                    <p style="font-size: 13px; margin-bottom: 6px; color: #38bdf8;" id="news-timer-text">⏳ Vaqt hisoblanmoqda...</p>
+                    <p style="font-size: 16px; margin: 4px 0;"><b>Signal:</b> <span style="color: ${latestSignalData.direction.includes('BUY') ? '#22c55e' : '#ef4444'}">${latestSignalData.direction}</span></p>
+                    <p style="font-size: 13px; color: #cbd5e1;"><b>Izoh:</b> ${latestSignalData.description}</p>
+                </div>
+            `;
+
+            if (timerInterval) clearInterval(timerInterval);
+            
+            const targetMs = new Date(latestSignalData.targetTime).getTime();
+            
+            timerInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const diff = targetMs - now;
+                const timerEl = document.getElementById('news-timer-text');
+                
+                if (!timerEl) return;
+
+                if (diff <= 0) {
+                    timerEl.innerHTML = `🚨 <b>News vaqti keldi!</b>`;
+                    clearInterval(timerInterval);
+                } else {
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    timerEl.innerHTML = `⏳ News gacha: <b>${hours} soat ${minutes} daq ${seconds} soniya</b> qoldi`;
+                }
+            }, 1000);
+
+        } else {
+            if (timerInterval) clearInterval(timerInterval);
+            container.innerHTML = `
+                <div class="locked-box" style="margin-top: 0;" onclick="togglePurchaseModal()">
+                    <p style="font-size: 14px; color: #f87171; font-weight: bold;">🔒 News signal yopiq</p>
+                    <p style="font-size: 12px; color: #cbd5e1; margin-top: 2px;">Ko'rish uchun token evaziga premium sotib oling!</p>
+                </div>
+            `;
+        }
+    }
+
+    function loadChatMessages() {
+        const chatList = document.getElementById('chat-messages-list');
+        onValue(ref(db, 'chat_messages'), (snapshot) => {
+            if (!snapshot.exists()) {
+                chatList.innerHTML = '<p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 20px;">Hozircha xabarlar yo\'q. Birinchi bo\'lib yozing!</p>';
+                return;
+            }
+            let html = '';
+            snapshot.forEach((childSnapshot) => {
+                const msg = childSnapshot.val();
+                const isMine = msg.username === currentUserData.username;
+                
+                const dateObj = new Date(msg.timestamp || Date.now());
+                const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                html += `
+                    <div class="tg-message ${isMine ? 'mine' : ''}">
+                        <span class="tg-msg-author">${msg.username}</span>
+                        <div class="tg-msg-text">
+                            ${msg.text}
+                            <span class="tg-msg-time">${timeStr}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            chatList.innerHTML = html;
+            chatList.scrollTop = chatList.scrollHeight;
+        });
+    }
+
+    window.sendChatMessage = async function() {
+        const input = document.getElementById('chat-input');
+        const textVal = input.value.trim();
+        if (!textVal) return;
+
+        try {
+            await push(ref(db, 'chat_messages'), {
+                username: currentUserData.username,
+                text: textVal,
+                timestamp: Date.now()
+            });
+            input.value = "";
+        } catch (e) {
+            alert("Xatolik: " + e.message);
+        }
+    }
+
+    window.handleChatKeyDown = function(event) {
+        if (event.key === 'Enter') {
+            sendChatMessage();
+        }
+    }
+
+    onValue(ref(db, 'signals/latest'), async (snapshot) => {
+        latestSignalData = snapshot.val();
+        if (currentUserData.username) {
+            await syncUserData();
+            updateNewsDisplay();
+        }
+    });
+
+    window.onload = async function() {
+        const savedUser = localStorage.getItem("ozod_user");
+        if (savedUser) {
+            currentUserData = JSON.parse(savedUser);
+            await loadDashboard();
+        }
+    }
+</script>
+
+</body>
+</html>
